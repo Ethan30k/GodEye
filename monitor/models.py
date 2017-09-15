@@ -132,3 +132,30 @@ class TriggerExpression(models.Model):
 
     def __str__(self):
         return "%s" % self.trigger
+
+
+class Action(models.Model):
+    """报警策略"""
+    name = models.CharField(max_length=64)
+    triggers = models.ManyToManyField("Trigger")
+
+    recover_notice_subject = models.CharField(max_length=128)
+    recover_body = models.TextField()
+
+    interval = models.SmallIntegerField(verbose_name="报警间隔")
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class ActionOperation(models.Model):
+    """报警动作"""
+    action_type_choices = (
+        (0, "Email"),
+        (1, "WeiXin"),
+        (2, "Script"),
+    )
+    action_type = models.SmallIntegerField(default=action_type_choices)
+    step = models.SmallIntegerField(verbose_name="报警升级阈值")
+    notifiers = models.ManyToManyField("UserProfile", blank=Trigger)
+    script_name = models.CharField(max_length=128, blank=True, null=True)
