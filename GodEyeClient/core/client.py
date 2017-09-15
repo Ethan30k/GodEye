@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# _*_coding:utf-8_*_
+__author__ = 'Alex Li'
 
 import time
 from GodEyeClient.conf import settings
@@ -14,10 +14,10 @@ class ClientHandle(object):
         self.monitored_services = {}
 
     def load_latest_configs(self):
-        """
+        '''
         load the latest monitor configs from monitor server
         :return:
-        """
+        '''
         request_type = settings.configs['urls']['get_configs'][1]
         url = "%s/%s" % (settings.configs['urls']['get_configs'][0], settings.configs['HostID'])
         latest_configs = self.url_request(request_type, url)
@@ -25,10 +25,10 @@ class ClientHandle(object):
         self.monitored_services.update(latest_configs)
 
     def forever_run(self):
-        """
+        '''
         start the client program forever
         :return:
-        """
+        '''
         exit_flag = False
         config_last_update_time = 0
 
@@ -60,11 +60,11 @@ class ClientHandle(object):
             time.sleep(1)
 
     def invoke_plugin(self, service_name, val):
-        """
+        '''
         invoke the monitor plugin here, and send the data to monitor server after plugin returned status data each time
         :param val: [pulgin_name,monitor_interval,last_run_time]
         :return:
-        """
+        '''
         plugin_name = val[0]
         if hasattr(plugin_api, plugin_name):
             func = getattr(plugin_api, plugin_name)
@@ -84,18 +84,18 @@ class ClientHandle(object):
             print('---report data:', report_data)
             self.url_request(request_action, request_url, params=report_data)
         else:
-            print("\033[31;1mCannot find service [%s]'s plugin name [%s] in plugin_api\033[0m" %
-                  (service_name, plugin_name))
+            print("\033[31;1mCannot find service [%s]'s plugin name [%s] in plugin_api\033[0m" % (service_name,
+                                                                                                  plugin_name))
         print('--plugin:', val)
 
     def url_request(self, action, url, **extra_data):
-        """
+        '''
         cope with monitor server by url
         :param action: "get" or "post"
         :param url: witch url you want to request from the monitor server
         :param extra_data: extra parameters needed to be submited
         :return:
-        """
+        '''
         abs_url = "http://%s:%s/%s" % (settings.configs['Server'],
                                        settings.configs["ServerPort"],
                                        url)

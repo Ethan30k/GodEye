@@ -83,3 +83,52 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return "%s" % self.name
+
+
+class Trigger(models.Model):
+    """触发器"""
+    name = models.CharField(max_length=64, blank=True, null=True)
+    template = models.ForeignKey("Template")
+    severity_choice = (
+        (0, "info"),
+        (1, "Warning"),
+        (2, "Average"),
+        (3, "Critical"),
+        (4, "Diaster"),
+    )
+    severity = models.SmallIntegerField(default=0, choices=severity_choice)
+    enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class TriggerExpression(models.Model):
+    """触发器表达式"""
+    trigger = models.ForeignKey("Trigger")
+    service = models.ForeignKey("Service")
+    service_index = models.CharField(max_length=64)
+    operator_choice = (
+        ("gt", ">"),
+        ("lt", "<"),
+        ("eq", "=")
+    )
+    operator = models.CharField(choices=operator_choice, max_length=32)
+    data_calc_func_choices = (
+        ("avg", "平均值"),
+        ("max", "最大值"),
+        ("min", "最小值"),
+        ("hit", "HIT"),
+        ("last", "最近的值"),
+    )
+    data_calc_func = models.CharField(max_length=64, choices=data_calc_func_choices)
+    calc_func_args = models.CharField(max_length=64, verbose_name="函数的非固定参数,json格式")
+    threshold = models.IntegerField(verbose_name="阈值")
+    logic_choices = (
+        (0, "AND"),
+        (1, "OR")
+    )
+    login_with_next = models.SmallIntegerField(choices=logic_choices)
+
+    def __str__(self):
+        return "%s" % self.trigger
