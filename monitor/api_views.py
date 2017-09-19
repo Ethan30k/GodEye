@@ -5,7 +5,9 @@ from monitor.serializer import ClientHandler
 from monitor.backends import data_optimization
 from monitor.backends import redis_conn
 from django.conf import settings
-
+from monitor import models
+from monitor.serializer import get_host_triggers
+from monitor.backends import data_processing
 
 # Create your views here.
 
@@ -40,6 +42,15 @@ def service_report(request):
             # redis_key_format = "StatusData_%s_%s_latest" %(client_id,service_name)
             # data['report_time'] = time.time()
             # REDIS_OBJ.lpush(redis_key_format,json.dumps(data))
+            # 同时触发trigger检查
+            print("-------触发trigger检查---------")
+            host_obj = models.Host.objects.get(id=client_id)
+            service_triggers = get_host_triggers(host_obj)
+
+            trigger_handler = data_processing.DataHandler(settings, connect_redis=False)
+            for trigger in service_triggers:
+                trigger_handler.load_service_data_and_calulating(host_obj, trigger, REDIS_OBJ)
+            print("service trigger::", service_triggers)
 
         except IndexError as e:
             print('----->err:', e)
