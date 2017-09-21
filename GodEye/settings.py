@@ -132,3 +132,14 @@ STATUS_DATA_OPTIMIZATION = {
 }
 
 TRIGGER_CHAN = 'trigger_event_channel'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'smtp.exmail.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '1111@qq.com'
+EMAIL_HOST_PASSWORD = 'fsdfasf'
+DEFAULT_FROM_EMAIL = '监控<1111@qq.com>'
+
+REPORT_LATE_TOLERANCE_TIME = 10  # allow service report late than monitor interval no more than defined seconds.

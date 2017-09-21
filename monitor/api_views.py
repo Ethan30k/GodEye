@@ -8,6 +8,8 @@ from django.conf import settings
 from monitor import models
 from monitor.serializer import get_host_triggers
 from monitor.backends import data_processing
+from monitor import serializer
+from monitor import graphs
 
 # Create your views here.
 
@@ -56,3 +58,26 @@ def service_report(request):
             print('----->err:', e)
 
     return HttpResponse(json.dumps("---report success---"))
+
+
+def hosts_status(request):
+
+    hosts_data_serializer = serializer.StatusSerializer(request, REDIS_OBJ)
+    hosts_data = hosts_data_serializer.by_hosts()
+
+    return HttpResponse(json.dumps(hosts_data))
+
+
+def hostgroups_status(request):
+    group_serializer = serializer.GroupStatusSerializer(request, REDIS_OBJ)
+    group_serializer.get_all_groups_status()
+
+    return HttpResponse('ss')
+
+
+def graphs_generator(request):
+
+    graphs_generator = graphs.GraphGenerator2(request, REDIS_OBJ)
+    graphs_data = graphs_generator.get_host_graph()
+    print("graphs_data", graphs_data)
+    return HttpResponse(json.dumps(graphs_data))
